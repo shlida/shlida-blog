@@ -12,13 +12,13 @@ class Post extends Model
 	protected $dates = ['deleted_at'];
 	protected $fillable = [ 'title', 'description', 'user_id' ];
 
-	public function User()
-    {
-    	return $this->belongsTo('App\User');
-    }
+	public function user()
+	{
+		return $this->belongsTo('App\User');
+	}
 
-    public function scopeByUser($query, $id)
-    {
-        return $query->where('user_id', '=', $id);
-    }
+	public function scopebyUser($query, $id)
+	{
+		return $query->where('user_id', '=', $id);
+	}
 }

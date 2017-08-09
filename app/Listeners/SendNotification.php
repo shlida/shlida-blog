@@ -10,36 +10,36 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendNotification
 {
-    /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
+	/**
+	 * Create the event listener.
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		//
+	}
 
-    /**
-     * Handle the event.
-     *
-     * @param  CreatedPost  $event
-     * @return void
-     */
-    public function handle(CreatedPost $event)
-    {
-        $users = User::select('id')->where('id','!=',$event->post->user_id)->get();
-        
-        foreach ($users as $user) {
-            $notifications[] = [
-                'post_id' => $event->post->id,
-                'user_id' => $user->id,
-                'readed' => 0
-            ];
-        }
+	/**
+	 * Handle the event.
+	 *
+	 * @param  CreatedPost  $event
+	 * @return void
+	 */
+	public function handle(CreatedPost $event)
+	{
+		$users = User::select('id')->where('id', '!=', $event->post->user_id)->get();
 
-        Notification::insert($notifications);
+		foreach ($users as $user) {
+			$notifications[] = [
+				'post_id' => $event->post->id,
+				'user_id' => $user->id,
+				'readed' => 0
+			];
+		}
 
-        return;
-    }
+		Notification::insert($notifications);
+
+		return;
+	}
 }

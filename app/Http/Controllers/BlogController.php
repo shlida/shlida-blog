@@ -9,101 +9,101 @@ use App\Events\CreatedPost;
 class BlogController extends Controller
 {
 	public function __construct()
-    {
-        $this->myUser = [
-        	'id' => 1,
-        	'username' => 'user1',
-        	'email' => 'email@abc.com'
-        ];
-    }
+	{
+		$this->myUser = [
+			'id' => 1,
+			'username' => 'user1',
+			'email' => 'email@abc.com'
+		];
+	}
 
-    public function listing($id = 'all')
-    {
-    	$post = new Post();
-    	$post = $post->with('User');
+	public function listing($id = 'all')
+	{
+		$post = new Post();
+		$post = $post->with('user');
 
-    	if ($id != 'all') {
-    		$post = $post->ByUser($id);
-    	}
-    	
-    	$post = $post->get();
+		if ($id != 'all') {
+			$post = $post->byUser($id);
+		}
 
-    	$isOwner = ($id == $this->myUser['id']) ? true : false;
-    	
-    	$data = [
-    		'data' => $post,
-    		'isOwner' => $isOwner
-    	];
+		$post = $post->get();
 
-    	return view('blog.list', $data);
-    } 
+		$isOwner = ($id == $this->myUser['id']) ? true : false;
 
-    public function show($id)
-    {
-    	$post = new Post();
-    	$post = $post->with('User')->find($id);
+		$data = [
+			'data' => $post,
+			'isOwner' => $isOwner
+		];
 
-    	$data = [
-    		'data' => $post
-    	];
+		return view('blog.list', $data);
+	}
 
-    	return view('blog.show', $data);
-    }
+	public function show($id)
+	{
+		$post = new Post();
+		$post = $post->with('user')->find($id);
 
-    public function create()
-    {
-    	return view('blog.create');
-    } 
+		$data = [
+			'data' => $post
+		];
 
-    public function store(Request $request)
-    {
-    	$this->validate($request, [
-            'title' => 'required',
-            'description' => 'required'
-        ]);
+		return view('blog.show', $data);
+	}
 
-    	$request->request->add(['user_id' => $this->myUser['id']]);
-        $post = Post::create($request->all());
+	public function create()
+	{
+		return view('blog.create');
+	}
 
-        event(new CreatedPost($post));
+	public function store(Request $request)
+	{
+		$this->validate($request, [
+			'title' => 'required',
+			'description' => 'required'
+		]);
 
-        return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
-    }
+		$request->request->add(['user_id' => $this->myUser['id']]);
+		$post = Post::create($request->all());
 
-    public function edit($id)
-    {
-    	$post = new Post();
-    	$post = $post->find($id);
+		event(new CreatedPost($post));
 
-    	$data = [
-    		'data' => $post
-    	];
+		return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
+	}
 
-    	return view('blog.edit', $data);
-    } 
+	public function edit($id)
+	{
+		$post = new Post();
+		$post = $post->find($id);
 
-    public function update(Request $request, $id)
-    {
-    	$this->validate($request, [
-            'title' => 'required',
-            'description' => 'required',
-        ]);
+		$data = [
+			'data' => $post
+		];
 
-        $post = new Post;
-        $post = $post->find($id);
-        $post->title = $request->title;
-        $post->description = $request->description;
+		return view('blog.edit', $data);
+	}
+
+	public function update(Request $request, $id)
+	{
+		$this->validate($request, [
+			'title' => 'required',
+			'description' => 'required',
+		]);
+
+		$post = new Post;
+		$post = $post->find($id);
+		$post->title = $request->title;
+		$post->description = $request->description;
 		$post->save(); //eloquent update
 
-        return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
-    }
+		return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
+	}
 
-    public function destroy($id)
-    {
-    	$post = new Post;
-    	$post = $post->find($id);
-    	$post->delete(); //soft delete
+	public function destroy($id)
+	{
+		$post = new Post;
+		$post = $post->find($id);
+		$post->delete(); //soft delete
 
-    	return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
-    }
+		return redirect()->route('blog.list', ['id' => $this->myUser['id']]);
+	}
 }
